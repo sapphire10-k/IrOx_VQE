@@ -1,4 +1,5 @@
 [![Zenodo DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19491027.svg)](https://zenodo.org/doi/10.5281/zenodo.19491027)
+[![CI](https://github.com/sapphire10-k/IrOx_VQE/actions/workflows/python-package-conda.yml/badge.svg)](https://github.com/sapphire10-k/IrOx_VQE/actions/workflows/python-package-conda.yml)
 
 # Iridium Oxide ASE
 
@@ -16,12 +17,11 @@ comparative studies.
 
 ---
 
-## Preprint
+**A Reproducible Workflow for Extracting Quantum Hamiltonians from Surface-Adsorbate Models**
+M. Malhotra, N. Ramarapu, F. Rinaldi. Under review at *Discover Quantum Science* (Springer), 2026.
 
-**A Reproducible Workflow for Extracting Quantum Hamiltonians from Surface-Adsorbate Models**  
-Under review at *Nature* (2026)
-
-DOI: https://doi.org/10.5281/zenodo.19491027
+Preprint DOI: https://doi.org/10.21203/rs.3.rs-9495573/v1
+Code archive DOI: https://doi.org/10.5281/zenodo.19491027
 
 ---
 
@@ -127,7 +127,7 @@ Optional external software depending on workflow stage:
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/<your-org>/<repo-name>.git
+git clone https://github.com/sapphire10-k/IrOx_VQE
 cd <repo-name>
 ```
 
@@ -144,29 +144,27 @@ source .venv/bin/activate
 
 Install dependencies:
 
-```bash
-pip install -r requirements.txt
-```
+Using conda:
 
-If a requirements file is not yet provided:
+    ```conda env create -f environment.yml```
 
-```bash
-pip install ase numpy scipy matplotlib pandas
-```
+Or with pip:
 
----
+    ```pip install -e .```
 
 ## Running Locally
 
-An end-to-end example of the IrO₂ H* adsorption workflow is provided in:
+The repository runs nine GitHub Actions workflows. Alongside CI (tests on every
+push and pull request), the scientific stages themselves run as manually
+triggered, reproducible cloud jobs: quantum cluster extraction, fermionic and
+qubit Hamiltonian export, exact diagonalisation from an exported Hamiltonian,
+xTB orbital analysis on extracted clusters, QE input generation, and the
+canonical end-to-end example (run_all.sh).
 
-```text
-examples/iro2_h_star_o69/
-```
+Run tests locally:
 
-This example executes the full workflow via a shell script that orchestrates
-the individual Python stages in the correct order.
-
+    pytest tests/
+    
 ### Run the Workflow
 
 ```bash
