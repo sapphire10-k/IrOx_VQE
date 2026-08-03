@@ -316,7 +316,7 @@ Under review at *Nature*.
 
 ## License
 
-Add your preferred open-source license here (e.g. MIT, BSD-3-Clause, Apache-2.0).
+GPL-3.0. See LICENSE.
 
 ---
 
