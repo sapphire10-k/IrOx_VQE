@@ -1,0 +1,19 @@
+{
+  "config_name": "irox_gfn2_bfgs_v1",
+  "description": "Frozen optimiser settings for all IrO2(110) H adsorption runs. All 2H pair optimisations and all restarts use this file. triage_runs.py hashes this file into every metadata record.",
+  "xtb_version": "SET_ME_BEFORE_NEXT_RUN",
+  "gfn_level": "GFN2-xTB",
+  "ase_optimiser": "BFGS",
+  "fmax_target_eV_per_A": 0.05,
+  "max_steps": 200,
+  "charge": 0,
+  "multiplicity_handling": "xtb_default_uhf_0",
+  "constraint": {
+    "type": "FixAtoms",
+    "rule": "freeze all atoms with z below z_freeze_A",
+    "z_freeze_A": 20.0
+  },
+  "surface_threshold_A": 1.5,
+  "random_seed": null,
+  "notes": "xtb_version is a required pin: fill it in from 'xtb --version' before launching the pair batch. The triage script warns while it is unset."
+}
