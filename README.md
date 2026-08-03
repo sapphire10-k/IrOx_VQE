@@ -17,11 +17,13 @@ comparative studies.
 
 ---
 
-**A Reproducible Workflow for Extracting Quantum Hamiltonians from Surface-Adsorbate Models**
+## Preprint
+
+**A Reproducible Workflow for Extracting Quantum Hamiltonians from Surface-Adsorbate Models**  
 M. Malhotra, N. Ramarapu, F. Rinaldi. Under review at *Discover Quantum Science* (Springer), 2026.
 
-Preprint DOI: https://doi.org/10.21203/rs.3.rs-9495573/v1
-Code archive DOI: https://doi.org/10.5281/zenodo.19491027
+Preprint DOI: <https://doi.org/10.21203/rs.3.rs-9495573/v1>  
+Code archive DOI: <https://doi.org/10.5281/zenodo.19491027>
 
 ---
 
@@ -120,6 +122,7 @@ Optional external software depending on workflow stage:
 - Quantum ESPRESSO
 - xTB
 - PySCF
+- Qrisp
 - Qiskit
 
 ---
@@ -128,43 +131,40 @@ Optional external software depending on workflow stage:
 
 ```bash
 git clone https://github.com/sapphire10-k/IrOx_VQE
-cd <repo-name>
+cd IrOx_VQE
 ```
 
 ---
 
 ### Create a Local Environment
 
-Using Python virtual environments:
+Using conda:
+
+```bash
+conda env create -f environment.yml
+```
+
+Or with pip:
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
+pip install -e .
 ```
 
-Install dependencies:
-
-Using conda:
-
-    ```conda env create -f environment.yml```
-
-Or with pip:
-
-    ```pip install -e .```
+---
 
 ## Running Locally
 
-The repository runs nine GitHub Actions workflows. Alongside CI (tests on every
-push and pull request), the scientific stages themselves run as manually
-triggered, reproducible cloud jobs: quantum cluster extraction, fermionic and
-qubit Hamiltonian export, exact diagonalisation from an exported Hamiltonian,
-xTB orbital analysis on extracted clusters, QE input generation, and the
-canonical end-to-end example (run_all.sh).
+An end-to-end example of the IrO₂ H* adsorption workflow is provided in:
 
-Run tests locally:
+```text
+examples/iro2_h_star_o69/
+```
 
-    pytest tests/
-    
+This example executes the full workflow via a shell script that orchestrates
+the individual Python stages in the correct order.
+
 ### Run the Workflow
 
 ```bash
@@ -222,43 +222,19 @@ temporary artefacts.
 
 ---
 
-## Continuous Integration
+## Continuous Integration and Cloud Workflows
 
-Core workflow components are validated through automated testing using GitHub Actions.
+The repository runs nine GitHub Actions workflows. Alongside CI (tests on every
+push and pull request), the scientific stages themselves run as manually
+triggered, reproducible cloud jobs: quantum cluster extraction, fermionic and
+qubit Hamiltonian export, exact diagonalisation from an exported Hamiltonian,
+xTB orbital analysis on extracted clusters, QE input generation, and the
+canonical end-to-end example (`run_all.sh`).
 
 Run tests locally:
 
 ```bash
 pytest tests/
-```
-
-Example GitHub Actions workflow:
-
-```yaml
-name: CI
-
-on:
-  push:
-  pull_request:
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-
-      - name: Run tests
-        run: |
-          pytest tests/
 ```
 
 CI validation is intended to ensure workflow stability while preserving the
@@ -310,13 +286,13 @@ If you use this workflow, please cite:
 }
 ```
 
-Under review at *Nature*.
+Under review at *Discover Quantum Science* (Springer).
 
 ---
 
 ## License
 
-GPL-3.0. See LICENSE.
+GPL-3.0. See [LICENSE](LICENSE).
 
 ---
 
