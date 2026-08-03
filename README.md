@@ -242,6 +242,16 @@ modular and exploratory nature of the repository.
 
 ---
 
+## Run Triage
+
+Every geometry optimisation in this pipeline is characterised by `scripts/triage_runs.py` before its result is allowed anywhere near the ML dataset. The script walks a directory of run folders, parses the artefacts the optimisation stage actually produces (the ASE optimiser text log, the results and metadata JSON files, and the trajectory files), and emits a per job metadata record plus one summary CSV across all jobs. Each record carries the versions in play, the optimiser settings, wall time recovered from the log timestamps, the final force state including which atom carries the worst force, a summary of the constraint mask so that inconsistent fixed layers are visible across the whole batch, and a full account of what the adsorbate did between the first and last frame.
+
+Jobs are sorted into bins by three signals read together: the shape of the force curve over the final optimiser steps, the identity of the worst force atom, and the geometry difference between initial and final frames. A run still descending when it hit the step ceiling is binned RESTART_MORE_STEPS and restarts from its last trajectory frame, never from scratch. A run oscillating without progress is binned RESTART_FIRE, on the reading that a soft adsorbate mode is defeating BFGS and FIRE will handle it better. A hydrogen that settled on a different site than intended is binned RELABEL_SITE: the final site becomes the ML label while the intended site is preserved verbatim in the record, because those sites were chosen deliberately and the intent must never be silently rewritten. A hydrogen that left the surface, or a surface that reconstructed under spiky forces, is binned DISCARD_PHYSICAL. And a worst force living on a deep slab atom that should have been frozen is binned SETUP_ERROR, loudly, since that is a constraint problem no optimiser choice can repair. Electronic convergence warnings from xTB, where output is available to grep, ride alongside whichever bin applies as an SCF_FAIL annotation, because their fix is electronic rather than a different optimiser.
+
+All runs are executed against a single frozen configuration, `inputs/frozen_optimiser_config.json`, which pins the xtb version, GFN level, optimiser, force target, step ceiling, charge and multiplicity handling, and the constraint definition. The triage script hashes this file into every record it writes, so any record can be traced to the exact settings that produced it and scatter from drifting settings cannot recur unnoticed.
+
+The repository stores no outputs in Git, and the triage tool respects that principle: its outputs are written to a path the user supplies outside the repository. Anyone cloning this project regenerates their own dataset, but the instrument that characterises any such dataset, and the frozen settings that produced it, travel with the code. Outputs stay out of the repository; the means of judging them is in it.
+
 ## Reproducibility and Development Status
 
 Initial IrO₂ slab construction and baseline relaxation were performed using
