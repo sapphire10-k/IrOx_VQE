@@ -108,7 +108,7 @@ def main():
 
     slab_in = cfg["reference"]["slab_qe_input"]
     oh_dist = float(cfg["settings"].get("oh_distance_A", 1.0))
-    z_freeze = float(cfg["settings"].get("z_freeze_A", 20.0))
+    z_freeze = float(cfg["settings"].get("z_freeze_A", 20.74))
     surf_thr = float(cfg["settings"].get("surface_threshold_A", 1.5))
     candidate_O = list(map(int, cfg["candidate_sites"]["o_indices"]))
 
