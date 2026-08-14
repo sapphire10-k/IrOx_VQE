@@ -41,7 +41,7 @@ def setup_structure(
     input_file: str = "inputs/slab_clean_2x2.in",
     o_index: int = 20,
     oh_distance: float = 1.0,
-    z_freeze: float = 20.0,
+    z_freeze: float = 20.74,
     neighbor_cutoff: float = 1.5,
     surface_threshold: float = 1.5,  # New param for surface detection
     outputs_dir="outputs",
