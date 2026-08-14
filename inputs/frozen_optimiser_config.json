@@ -11,7 +11,7 @@
   "constraint": {
     "type": "FixAtoms",
     "rule": "freeze all atoms with z below z_freeze_A",
-    "z_freeze_A": 20.0
+    "z_freeze_A": 20.74
   },
   "surface_threshold_A": 1.5,
   "random_seed": null,
