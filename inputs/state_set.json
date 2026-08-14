@@ -1,6 +1,6 @@
 {
   "reference": {
-    "slab_qe_input": "inputs/slab_clean_2x2.in",
+    "slab_qe_input": "inputs/slab_clean_2x2_corrected.in",
     "center_o_index": 20
   },
   "candidate_sites": {
@@ -9,7 +9,7 @@
   "settings": {
     "oh_distance_A": 1.0,
     "surface_threshold_A": 1.5,
-    "z_freeze_A": 20.0
+    "z_freeze_A": 20.74
   },
   "states": [
     { "name": "clean", "type": "clean_slab" },
