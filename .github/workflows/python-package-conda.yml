@@ -67,7 +67,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        site: [21, 22, 23, 44, 46, 47, 69, 71, clean]
+        site: site: [21, 45, 69, 93, clean]
 
     steps:
       - uses: actions/checkout@v4
