@@ -1,10 +1,10 @@
 {
   "reference": {
-    "slab_qe_input": "inputs/slab_clean_2x2_corrected.in",
-    "center_o_index": 20
+    "slab_qe_input": "inputs/slab_clean_2x2_canonical.in",
+    "center_o_index": 45
   },
   "candidate_sites": {
-    "o_indices": [21, 22, 23, 44, 46, 47, 69, 71]
+    "o_indices": [21, 45, 69, 93]
   },
   "settings": {
     "oh_distance_A": 1.0,

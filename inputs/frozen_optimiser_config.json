@@ -1,5 +1,5 @@
 {
-  "config_name": "irox_gfn2_bfgs_v1",
+  "config_name": "irox_gfn2_bfgs_v3",
   "description": "Frozen optimiser settings for all IrO2(110) H adsorption runs. All 2H pair optimisations and all restarts use this file. triage_runs.py hashes this file into every metadata record.",
   "xtb_version": "6.7.1",
   "gfn_level": "GFN2-xTB",
@@ -15,5 +15,4 @@
   },
   "surface_threshold_A": 1.5,
   "random_seed": null,
-  "notes": "xtb_version is a required pin: fill it in from 'xtb --version' before launching the pair batch. The triage script warns while it is unset."
 }
