@@ -1,0 +1,42 @@
+name: Triage optimisation runs (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "Actions run ID whose artifacts to triage (from the run's URL)"
+        required: true
+        type: string
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install ase numpy pandas
+
+      - name: Download run artifacts
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ inputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: downloaded_runs
+
+      - name: Run triage
+        run: |
+          python scripts/triage_runs.py downloaded_runs \
+            --out "$RUNNER_TEMP/triage_out" \
+            --config inputs/frozen_optimiser_config.json
+
+      - name: Upload triage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: triage-report-run-${{ inputs.run_id }}
+          path: ${{ runner.temp }}/triage_out
+          retention-days: 90

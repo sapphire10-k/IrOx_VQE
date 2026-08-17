@@ -164,7 +164,6 @@ jobs:
             --active-mos "${{ inputs.active_mos }}" \
             --ecp "${{ inputs.ecp }}" \
             --outdir "outputs/hamiltonians"
-
       - name: Export qubit Hamiltonian JSON
         shell: bash
         run: |

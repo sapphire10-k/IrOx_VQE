@@ -38,10 +38,10 @@ def _one_hot_bits(n: int, hot_index: int) -> str:
     return "".join(bits)
 
 def setup_structure(
-    input_file: str = "inputs/slab_clean_2x2.in",
+    input_file: str = "inputs/slab_clean_2x2_canonical.in",
     o_index: int = 20,
     oh_distance: float = 1.0,
-    z_freeze: float = 20.0,
+    z_freeze: float = 21.01,
     neighbor_cutoff: float = 1.5,
     surface_threshold: float = 1.5,  # New param for surface detection
     outputs_dir="outputs",
@@ -149,11 +149,11 @@ def setup_structure(
     return slab, meta
 
 def setup_batch_nearby_oxygen_sites(
-    input_file: str = "inputs/slab_clean_2x2.in",
+    input_file: str = "inputs/slab_clean_2x2_canonical.in",
     center_o_index: int = 20,
     k: int = 8,
     oh_distance: float = 1.0,
-    z_freeze: float = 20.0,
+    z_freeze: float = 21.01,
     neighbor_cutoff: float = 1.5,
     surface_threshold: float = 1.5,
     outputs_dir: str = "outputs",
@@ -224,12 +224,12 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description="Prepare H* adsorption structure(s)")
-    parser.add_argument("--input", default="inputs/slab_clean_2x2.in", help="Input structure file")
+    parser.add_argument("--input", default="inputs/slab_clean_2x2_canonical.in", help="Input structure file")
 
     # Single-run args (existing)
     parser.add_argument("--o-index", type=int, default=20, help="Oxygen atom index for H placement")
     parser.add_argument("--oh-dist", type=float, default=1.0, help="O-H distance (Å)")
-    parser.add_argument("--z-freeze", type=float, default=20.0, help="Freeze atoms below this z (Å)")
+    parser.add_argument("--z-freeze", type=float, default=21.01, help="Freeze atoms below this z (Å)")
     parser.add_argument("--neighbor-cutoff", type=float, default=1.5, help="Neighbor cutoff (Å)")
     parser.add_argument("--surface-threshold", type=float, default=1.5, help="Threshold for surface O detection (Å)")
     parser.add_argument("--outputs", default="outputs", help="Outputs directory")
