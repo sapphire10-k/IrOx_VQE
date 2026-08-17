@@ -9,7 +9,7 @@
   "settings": {
     "oh_distance_A": 1.0,
     "surface_threshold_A": 1.5,
-    "z_freeze_A": 20.74
+    "z_freeze_A": 21.01
   },
   "states": [
     { "name": "clean", "type": "clean_slab" },

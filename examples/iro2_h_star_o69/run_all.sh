@@ -4,7 +4,7 @@ set -euo pipefail
 SITE="69"
 
 # --- Inputs
-INPUT_SLAB="inputs/slab_clean_2x2.in"
+INPUT_SLAB="inputs/slab_clean_2x2_canonical.in"
 
 # --- Where we put the prepared H* state (match your workflow convention)
 STATE_DIR="outputs/states/H_star"
@@ -23,7 +23,7 @@ HAM_OUTDIR="outputs/hamiltonians"
 
 # --- Parameters (choose conservative defaults)
 OH_DIST="1.0"
-Z_FREEZE="20.0"
+Z_FREEZE="21.01"
 SURFACE_THRESHOLD="1.5"
 NEIGHBOR_CUTOFF="1.5"
 
