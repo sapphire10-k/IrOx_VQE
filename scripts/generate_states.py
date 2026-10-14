@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import hashlib
+import os
 from pathlib import Path
 from typing import Dict, Any, List, Tuple
 
@@ -112,6 +114,13 @@ def main():
     surf_thr = float(cfg["settings"].get("surface_threshold_A", 1.5))
     candidate_O = list(map(int, cfg["candidate_sites"]["o_indices"]))
 
+    # Provenance written into every metadata file: which slab, which code.
+    prov = {
+        "slab_input": slab_in,
+        "slab_sha256": hashlib.sha256(Path(slab_in).read_bytes()).hexdigest(),
+        "git_commit": os.environ.get("GITHUB_SHA", "not recorded (local run)"),
+   }
+
     # Read QE slab. We keep PBC off (matches your xTB/ASE pipeline style).
     slab0 = read(slab_in, format="espresso-in")
     slab0.set_pbc((False, False, False))
@@ -135,7 +144,7 @@ def main():
                 "z_top_A": z_top,
                 "z_freeze_A": z_freeze,
             }
-            write_state(out_root, st_name, base, atoms, meta)
+            write_state(out_root, st_name, base, atoms, {**prov, **meta})
 
         elif st_type == "single_adsorbate":
             ads = st.get("adsorbate", "H")
@@ -158,7 +167,7 @@ def main():
                     "surface_threshold_A": surf_thr,
                     "warnings": [] if o_idx in surface_O else [f"O[{o_idx}] not detected as surface O by threshold {surf_thr} Å"]
                 }
-                write_state(out_root, st_name, base, atoms, meta)
+                write_state(out_root, st_name, base, atoms, {**prov, **meta})
 
         elif st_type == "hydrated_single_adsorbate":
             ads = st.get("adsorbate", "H")
@@ -183,7 +192,7 @@ def main():
                 "surface_threshold_A": surf_thr,
                 "warnings": [] if o_idx in surface_O else [f"O[{o_idx}] not detected as surface O by threshold {surf_thr} Å"]
             }
-            write_state(out_root, st_name, base, atoms, meta)
+            write_state(out_root, st_name, base, atoms, {**prov, **meta})
 
         else:
             raise ValueError(f"Unknown state type: {st_type}")
