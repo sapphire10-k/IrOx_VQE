@@ -28,6 +28,8 @@ def main() -> None:
     ap.add_argument("--fmax", type=float, default=0.05, help="Convergence threshold (eV/Å)")
     ap.add_argument("--steps", type=int, default=200, help="Maximum optimizer steps")
     ap.add_argument("--method", default="GFN2-xTB", help="xTB method")
+    ap.add_argument("--config", default="inputs/frozen_optimiser_config.json",
+                    help="Frozen optimiser config, checked against the structure")
     args = ap.parse_args()
 
     outdir = Path(args.output)
@@ -49,6 +51,14 @@ def main() -> None:
 
     try:
         atoms = read(args.traj)
+        cfg = json.loads(Path(args.config).read_text())
+        expected = tuple(cfg["pbc"])
+        got = tuple(bool(p) for p in atoms.get_pbc())
+        if got != expected:
+            raise SystemExit(
+                f"{args.traj}: pbc {got} does not match frozen config "
+                f"{cfg['config_name']} which requires {expected}. "
+                f"Rebuild the states with the current generate_states.py.")
         atoms.calc = XTB(method=args.method)
 
         # initial diagnostics
