@@ -122,8 +122,14 @@ def main():
    }
 
     # Read QE slab. We keep PBC off (matches your xTB/ASE pipeline style).
+    #slab0 = read(slab_in, format="espresso-in")
+    #slab0.set_pbc((False, False, False))
+
+    # Read QE slab. Periodic in a and b: the slab builder and the surface
+    # triage gate both assume it, and open faces are only 3.15 A from the
+    # cell centre, so nothing in this cell is free of edge effects.
     slab0 = read(slab_in, format="espresso-in")
-    slab0.set_pbc((False, False, False))
+    slab0.set_pbc((True, True, True))
 
     surface_O, z_top = surface_oxygen_indices(slab0, threshold_A=surf_thr)
 
