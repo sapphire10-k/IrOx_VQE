@@ -19,6 +19,12 @@ name: Periodic boundary feasibility (GFN2-xTB)
 # is on main it cannot be started from this branch at all.
 on:
   workflow_dispatch:
+  # TEMPORARY: lets this branch start the workflow, because the Run workflow
+  # button only exists for workflows on main. Remove after one run.
+  push:
+    branches: [periodic-boundaries]
+    paths:
+      - ".github/workflows/pbc-feasibility.yml"
 
 permissions:
   contents: read
