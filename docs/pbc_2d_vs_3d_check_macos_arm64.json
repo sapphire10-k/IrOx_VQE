@@ -1,0 +1,130 @@
+{
+  "c_values_A": [
+    42.01316398881907,
+    62.01316398881907
+  ],
+  "trials": [
+    {
+      "calculator": "xtb-python",
+      "method": "GFN1-xTB",
+      "pbc": [
+        true,
+        true,
+        false
+      ],
+      "c_A": 42.01316398881907,
+      "energy_eV": -11693.525682658754,
+      "status": "ok"
+    },
+    {
+      "calculator": "xtb-python",
+      "method": "GFN1-xTB",
+      "pbc": [
+        true,
+        true,
+        false
+      ],
+      "c_A": 62.01316398881907,
+      "energy_eV": -11694.243624370976,
+      "status": "ok"
+    },
+    {
+      "calculator": "xtb-python",
+      "method": "GFN1-xTB",
+      "pbc": [
+        true,
+        true,
+        true
+      ],
+      "c_A": 42.01316398881907,
+      "energy_eV": -11693.525682658754,
+      "status": "ok"
+    },
+    {
+      "calculator": "xtb-python",
+      "method": "GFN1-xTB",
+      "pbc": [
+        true,
+        true,
+        true
+      ],
+      "c_A": 62.01316398881907,
+      "energy_eV": -11694.243624370976,
+      "status": "ok"
+    },
+    {
+      "calculator": "tblite",
+      "method": "GFN1-xTB",
+      "pbc": [
+        true,
+        true,
+        false
+      ],
+      "c_A": 42.01316398881907,
+      "energy_eV": -11683.43368072687,
+      "status": "ok"
+    },
+    {
+      "calculator": "tblite",
+      "method": "GFN1-xTB",
+      "pbc": [
+        true,
+        true,
+        false
+      ],
+      "c_A": 62.01316398881907,
+      "energy_eV": -11683.433681262763,
+      "status": "ok"
+    },
+    {
+      "calculator": "tblite",
+      "method": "GFN1-xTB",
+      "pbc": [
+        true,
+        true,
+        true
+      ],
+      "c_A": 42.01316398881907,
+      "energy_eV": -11683.43368072687,
+      "status": "ok"
+    },
+    {
+      "calculator": "tblite",
+      "method": "GFN1-xTB",
+      "pbc": [
+        true,
+        true,
+        true
+      ],
+      "c_A": 62.01316398881907,
+      "energy_eV": -11683.433681262763,
+      "status": "ok"
+    }
+  ],
+  "summary": [
+    {
+      "calculator": "xtb-python",
+      "pbc": "TTF",
+      "dE_for_vacuum_change_eV": -0.717941712222455,
+      "verdict": "c is used: this is 3D periodicity"
+    },
+    {
+      "calculator": "xtb-python",
+      "pbc": "TTT",
+      "dE_for_vacuum_change_eV": -0.717941712222455,
+      "verdict": "c is used: this is 3D periodicity"
+    },
+    {
+      "calculator": "tblite",
+      "pbc": "TTF",
+      "dE_for_vacuum_change_eV": -5.358924681786448e-07,
+      "verdict": "c is irrelevant: consistent with true 2D"
+    },
+    {
+      "calculator": "tblite",
+      "pbc": "TTT",
+      "dE_for_vacuum_change_eV": -5.358924681786448e-07,
+      "verdict": "c is irrelevant: consistent with true 2D"
+    }
+  ]
+}
