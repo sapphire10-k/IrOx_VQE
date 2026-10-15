@@ -57,6 +57,9 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--probe", required=True)
     ap.add_argument("--conda-list", default=None)
+    ap.add_argument("--probe-conda-list", default=None,
+                help="conda list --json for the throwaway probe env. Shown "
+                        "beside the production env; never version-checked.")
     ap.add_argument("--config", default="inputs/frozen_optimiser_config.json")
     ap.add_argument("--vacuum", nargs="*", default=[],
                     help="Optional pbc_2d_vs_3d_check JSON files to summarise")
@@ -79,6 +82,8 @@ def main() -> int:
         return 1
 
     installed = load_conda_list(Path(args.conda_list) if args.conda_list else None)
+    probe_env = load_conda_list(Path(args.probe_conda_list)
+                                if args.probe_conda_list else None)
 
     # The verdict: can GFN2-xTB be run periodically on this platform?
     deciding = [t for t in trials
@@ -160,13 +165,26 @@ def main() -> int:
 
     # Environment, and the frozen config check.
     out.append("\n## Environment\n")
-    out.append("| Package | Version |")
-    out.append("| --- | --- |")
-    for name in OF_INTEREST:
-        if name in installed:
-            out.append(f"| `{name}` | {installed[name]} |")
-    if not installed:
-        out.append("| (conda list not supplied) | |")
+    if probe_env:
+        out.append("| Package | `iro2` (production) | `probe` (this run's "
+                   "calculations) |")
+        out.append("| --- | --- | --- |")
+        for name in OF_INTEREST:
+            a, b = installed.get(name, "-"), probe_env.get(name, "-")
+            if a == "-" and b == "-":
+                continue
+            flag = " **differs**" if a != b else ""
+            out.append(f"| `{name}` | {a} | {b}{flag} |")
+        out.append("\nThe trial matrix below was computed in `probe`. Only "
+                   "`iro2` is checked against the frozen config.\n")
+    else:
+        out.append("| Package | Version |")
+        out.append("| --- | --- |")
+        for name in OF_INTEREST:
+            if name in installed:
+                out.append(f"| `{name}` | {installed[name]} |")
+        if not installed:
+            out.append("| (conda list not supplied) | |")
 
     cfg_path = Path(args.config)
     if cfg_path.exists() and "xtb" in installed:
