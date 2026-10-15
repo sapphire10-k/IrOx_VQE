@@ -11,5 +11,4 @@ dependencies:
   - matplotlib
   - xtb-python
   - pyyaml
-  - tblite-python
   - pyflakes
