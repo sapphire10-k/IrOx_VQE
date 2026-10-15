@@ -1,6 +1,7 @@
 {
-  "config_name": "irox_gfn2_bfgs_v3",
-  "description": "Frozen optimiser settings for all IrO2(110) H adsorption runs. All 2H pair optimisations and all restarts use this file. triage_runs.py hashes this file into every metadata record.",
+  "config_name": "irox_bfgs_v4_periodic_pending_engine",
+  "description": "Frozen optimiser settings, periodic in a and b. Supersedes irox_gfn2_bfgs_v3, which relaxed every slab as a finite cluster. The engine is not yet settled: xtb 6.7.1 cannot evaluate GFN2-xTB under PBC.",
+  "pbc": [true, true, true],
   "xtb_version": "6.7.1",
   "gfn_level": "GFN2-xTB",
   "ase_optimiser": "BFGS",
