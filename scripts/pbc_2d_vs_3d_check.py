@@ -128,7 +128,13 @@ def main() -> None:
                 "calculator": kind, "pbc": pbc_lbl,
                 "dE_for_vacuum_change_eV": d,
                 "verdict": ("c is used: this is 3D periodicity"
-                            if abs(d) > 1e-6 else
+                            # 1e-4 eV, not 1e-6. SCF convergence noise on a
+                            # 96-atom slab is of order 1e-6 eV, so a 1e-6
+                            # threshold let tblite's flat response flip
+                            # between verdicts on noise alone (Linux CI gave
+                            # -2.3e-7 for TTF and +1.0e-6 for TTT). xtb's
+                            # 0.718 eV response is four orders above this.
+                            if abs(d) > 1e-4 else
                             "c is irrelevant: consistent with true 2D"),
             })
             print(f"  -> {kind:<11} {pbc_lbl}: dE = {d:+.9f} eV  "
