@@ -57,7 +57,8 @@ def setup_structure(
     slab = read(input_file, format="espresso-in")
     
     # Disable PBC for xTB
-    slab.set_pbc((False, False, False))
+    #slab.set_pbc((False, False, False))
+    slab.set_pbc((True, True, True))
     
     print(f"Initial structure: {len(slab)} atoms")
     print(f"Cell: {slab.cell.cellpar()}")
@@ -168,7 +169,8 @@ def setup_batch_nearby_oxygen_sites(
 
     # Read slab once to find nearest sites (no H added here)
     slab0 = read(input_file, format="espresso-in")
-    slab0.set_pbc((False, False, False))
+    #slab0.set_pbc((False, False, False))
+    slab0.set_pbc((True, True, True))
 
     surface_O, z_top = _surface_oxygen_indices(slab0, surface_threshold=surface_threshold)
     if center_o_index not in surface_O:
