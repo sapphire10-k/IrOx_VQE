@@ -19,6 +19,7 @@ Usage:
     python scripts/ci_report.py \
         --probe outputs/pbc_feasibility_probe_linux.json \
         --conda-list conda-list.json \
+        --probe-conda-list conda-list-probe.json \
         --config inputs/frozen_optimiser_config.json >> "$GITHUB_STEP_SUMMARY"
 """
 from __future__ import annotations
@@ -58,8 +59,8 @@ def main() -> int:
     ap.add_argument("--probe", required=True)
     ap.add_argument("--conda-list", default=None)
     ap.add_argument("--probe-conda-list", default=None,
-                help="conda list --json for the throwaway probe env. Shown "
-                        "beside the production env; never version-checked.")
+                    help="conda list --json for the throwaway probe env. Shown "
+                         "beside the production env; never version-checked.")
     ap.add_argument("--config", default="inputs/frozen_optimiser_config.json")
     ap.add_argument("--vacuum", nargs="*", default=[],
                     help="Optional pbc_2d_vs_3d_check JSON files to summarise")
@@ -70,8 +71,10 @@ def main() -> int:
     probe_path = Path(args.probe)
     if not probe_path.exists():
         print(f"## Boundary condition probe\n\n"
-              f"**Build failed.** The probe wrote no output at `{probe_path}`, "
-              f"so it did not run to completion.")
+              f"**No probe output** at `{probe_path}`. This step runs even "
+              f"after an earlier failure, so this message usually means an "
+              f"earlier step failed and the probe never started. The first "
+              f"red step in the job log is the real error.")
         return 1
     try:
         probe = json.loads(probe_path.read_text())
@@ -134,8 +137,8 @@ def main() -> int:
                            f"{gfn1[0]['energy_eV']:.6f} eV. The fault is "
                            "specific to the GFN2 path. GFN2 uses D4 "
                            "dispersion and GFN1 uses D3, so check the "
-                           "resolved `dftd4` version in the environment "
-                           "table.\n")
+                           "resolved `dftd4` version in the probe column of "
+                           "the environment table.\n")
             out.append(f"```\n{detail.strip()}\n```\n")
             out.append("Do not apply the engine change. Fix the build, then "
                        "re-run this workflow.\n")
@@ -164,6 +167,11 @@ def main() -> int:
                    "</details>\n")
 
     # Environment, and the frozen config check.
+    # Two environments, both built from environment.yml. iro2 is production
+    # and is the only one version-checked against the frozen config. probe is
+    # iro2 plus one override (the tblite pin), lives only inside the CI run,
+    # and may legitimately resolve different versions, which is why the
+    # differing rows are marked rather than failed.
     out.append("\n## Environment\n")
     if probe_env:
         out.append("| Package | `iro2` (production) | `probe` (this run's "
