@@ -1,0 +1,142 @@
+name: Periodic boundary feasibility (GFN2-xTB)
+
+# The question this answers cannot be answered on macOS arm64, where tblite's
+# GFN2 path segfaults even for a water molecule. GitHub's runners are Linux
+# x86-64, so this workflow is not merely a guard on the scripts: it IS the
+# Linux test that step 1 of docs/periodic_boundaries_change_set.md calls for.
+#
+# A GFN2 refusal under PBC does not fail the build. That is the finding.
+# See scripts/ci_report.py for exactly what does fail it.
+#
+# This runs in the shared environment.yml, not a private one, so that the
+# xtb-version-against-frozen-config check guards the environment the science
+# actually runs in. A separate env would have validated the wrong thing.
+
+on:
+  push:
+    paths:
+      - "scripts/pbc_feasibility_probe.py"
+      - "scripts/pbc_2d_vs_3d_check.py"
+      - "scripts/ci_report.py"
+      - "inputs/slab_clean_2x2_canonical.in"
+      - "inputs/frozen_optimiser_config.json"
+      - "environment.yml"
+      - ".github/workflows/pbc-feasibility.yml"
+  pull_request:
+    paths:
+      - "scripts/pbc_*.py"
+      - "environment.yml"
+      - ".github/workflows/pbc-feasibility.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    name: Feasibility probe on Linux
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-update-conda: true
+          auto-activate: false
+
+      - name: Create conda environment
+        shell: bash -l {0}
+        run: |
+          set -euo pipefail
+          conda env create -f environment.yml || true
+          conda run -n iro2 python -c "import numpy, ase, xtb, tblite; print('env ok')"
+
+      - name: Record the resolved environment
+        shell: bash -l {0}
+        run: |
+          set -euo pipefail
+          conda list -n iro2 --json > conda-list.json
+          conda run -n iro2 python -c "import xtb; print('xtb-python', xtb.__version__)"
+
+      - name: Syntax check every script
+        shell: bash -l {0}
+        run: |
+          set -euo pipefail
+          conda run -n iro2 python -m py_compile scripts/*.py
+
+      # py_compile only parses. A name used solely on an error path, such as
+      # sys.executable inside a crash handler, compiles cleanly and then
+      # raises NameError the first time that path is taken. pyflakes catches
+      # it statically, so scope is limited to the scripts added by this work.
+      - name: Undefined-name check on the boundary condition scripts
+        shell: bash -l {0}
+        run: |
+          set -euo pipefail
+          conda run -n iro2 python -m pyflakes \
+            scripts/pbc_feasibility_probe.py \
+            scripts/pbc_2d_vs_3d_check.py \
+            scripts/singlepoint_edge_vs_interior.py \
+            scripts/relax_periodic.py \
+            scripts/ci_report.py
+
+      - name: Argument surface of each boundary condition script
+        shell: bash -l {0}
+        run: |
+          set -euo pipefail
+          for s in pbc_feasibility_probe pbc_2d_vs_3d_check \
+                   singlepoint_edge_vs_interior relax_periodic ci_report; do
+            conda run -n iro2 python "scripts/${s}.py" --help > /dev/null
+            echo "argparse ok: ${s}"
+          done
+
+      - name: Feasibility probe
+        shell: bash -l {0}
+        run: |
+          set -euo pipefail
+          mkdir -p outputs
+          conda run -n iro2 python -u scripts/pbc_feasibility_probe.py \
+            --out outputs/pbc_feasibility_probe_linux.json
+
+      - name: Vacuum sensitivity, GFN1 control
+        shell: bash -l {0}
+        run: |
+          set -euo pipefail
+          conda run -n iro2 python -u scripts/pbc_2d_vs_3d_check.py \
+            --method GFN1-xTB \
+            --out outputs/pbc_2d_vs_3d_gfn1_linux.json
+
+      # This script does not isolate trials in subprocesses, so a tblite
+      # segfault takes the whole step down rather than being recorded. That is
+      # an outcome of the investigation, not a broken build, hence || true.
+      - name: Vacuum sensitivity, GFN2
+        shell: bash -l {0}
+        run: |
+          set -euo pipefail
+          conda run -n iro2 python -u scripts/pbc_2d_vs_3d_check.py \
+            --method GFN2-xTB --calculators tblite \
+            --out outputs/pbc_2d_vs_3d_gfn2_linux.json || true
+
+      - name: Report
+        if: always()
+        shell: bash -l {0}
+        run: |
+          set -euo pipefail
+          conda run -n iro2 python scripts/ci_report.py \
+            --probe outputs/pbc_feasibility_probe_linux.json \
+            --conda-list conda-list.json \
+            --config inputs/frozen_optimiser_config.json \
+            --vacuum outputs/pbc_2d_vs_3d_gfn1_linux.json \
+                     outputs/pbc_2d_vs_3d_gfn2_linux.json \
+            | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload probe results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pbc-probe-linux
+          path: |
+            outputs/*.json
+            conda-list.json
+          retention-days: 90
