@@ -1,0 +1,273 @@
+{
+  "probe": "step1_pbc_feasibility",
+  "slab_file": "inputs/slab_clean_2x2_canonical.in",
+  "method": "GFN2-xTB",
+  "versions": {
+    "python": "3.11.17",
+    "platform": "macOS-26.6-arm64-arm-64bit",
+    "machine": "arm64",
+    "numpy": "2.4.6",
+    "ase": "3.29.0",
+    "xtb": "20.2",
+    "tblite": "UNAVAILABLE: AttributeError: module 'tblite' has no attribute '__version__'",
+    "xtb_library": "UNAVAILABLE: ImportError: cannot import name 'VERSION' from 'xtb.libxtb' (/Users/manishamalhotra/.claude-science/conda/envs/xtbslab/lib/python3.11/site-packages/xtb/libxtb.py)"
+  },
+  "structure": {
+    "n_atoms": 96,
+    "formula": "Ir32O64",
+    "n_Ir": 32,
+    "n_O": 64,
+    "n_H": 0,
+    "cell_lengths_A": [
+      12.72311373524579,
+      6.3088,
+      42.01316398881907
+    ],
+    "cell_angles_deg": [
+      90.0,
+      90.0,
+      90.0
+    ],
+    "z_min_A": 15.0,
+    "z_max_A": 27.0131639888,
+    "slab_thickness_A": 12.013163988799999,
+    "vacuum_gap_along_c_A": 30.000000000019075
+  },
+  "pbc_as_read_from_qe_input": [
+    true,
+    true,
+    true
+  ],
+  "trials": [
+    {
+      "calculator": "xtb-python",
+      "method": "GFN2-xTB",
+      "pbc": [
+        false,
+        false,
+        false
+      ],
+      "status": "ok",
+      "energy_eV": -10376.841415333141,
+      "fmax_all_atoms_eV_per_A": 4.080225114724449,
+      "fmax_argmax_index": 90,
+      "frms_all_atoms_eV_per_A": 2.339218431694559,
+      "force_sum_eV_per_A": [
+        8.215650382226158e-15,
+        -2.842170943040401e-14,
+        -1.3766765505351941e-14
+      ],
+      "wall_time_s": 3.86
+    },
+    {
+      "calculator": "xtb-python",
+      "method": "GFN2-xTB",
+      "pbc": [
+        true,
+        true,
+        false
+      ],
+      "status": "failed",
+      "error_type": "CalculationFailed",
+      "error": "xtb could not evaluate input",
+      "error_chain": [
+        "CalculationFailed: xtb could not evaluate input",
+        "XTBException: Single point calculation failed:\n-2- xtb_calculator_singlepoint: Electronic structure method terminated\n-1- scf: Multipoles not available with PBC"
+      ],
+      "error_root": "XTBException: Single point calculation failed:\n-2- xtb_calculator_singlepoint: Electronic structure method terminated\n-1- scf: Multipoles not available with PBC",
+      "traceback_tail": [
+        "    self.calculate(atoms, [name], system_changes)",
+        "  File \"/Users/manishamalhotra/.claude-science/conda/envs/xtbslab/lib/python3.11/site-packages/xtb/ase/calculator.py\", line 233, in calculate",
+        "    raise ase_calc.CalculationFailed(\"xtb could not evaluate input\")",
+        "ase.calculators.calculator.CalculationFailed: xtb could not evaluate input"
+      ],
+      "wall_time_s": 0.147
+    },
+    {
+      "calculator": "xtb-python",
+      "method": "GFN2-xTB",
+      "pbc": [
+        true,
+        true,
+        true
+      ],
+      "status": "failed",
+      "error_type": "CalculationFailed",
+      "error": "xtb could not evaluate input",
+      "error_chain": [
+        "CalculationFailed: xtb could not evaluate input",
+        "XTBException: Single point calculation failed:\n-2- xtb_calculator_singlepoint: Electronic structure method terminated\n-1- scf: Multipoles not available with PBC"
+      ],
+      "error_root": "XTBException: Single point calculation failed:\n-2- xtb_calculator_singlepoint: Electronic structure method terminated\n-1- scf: Multipoles not available with PBC",
+      "traceback_tail": [
+        "    self.calculate(atoms, [name], system_changes)",
+        "  File \"/Users/manishamalhotra/.claude-science/conda/envs/xtbslab/lib/python3.11/site-packages/xtb/ase/calculator.py\", line 233, in calculate",
+        "    raise ase_calc.CalculationFailed(\"xtb could not evaluate input\")",
+        "ase.calculators.calculator.CalculationFailed: xtb could not evaluate input"
+      ],
+      "wall_time_s": 0.143
+    },
+    {
+      "calculator": "tblite",
+      "method": "GFN2-xTB",
+      "pbc": [
+        false,
+        false,
+        false
+      ],
+      "status": "crashed",
+      "returncode": -11,
+      "signal": "SIGSEGV",
+      "stderr_tail": [],
+      "stdout_tail": []
+    },
+    {
+      "calculator": "tblite",
+      "method": "GFN2-xTB",
+      "pbc": [
+        true,
+        true,
+        false
+      ],
+      "status": "crashed",
+      "returncode": -11,
+      "signal": "SIGSEGV",
+      "stderr_tail": [],
+      "stdout_tail": []
+    },
+    {
+      "calculator": "tblite",
+      "method": "GFN2-xTB",
+      "pbc": [
+        true,
+        true,
+        true
+      ],
+      "status": "crashed",
+      "returncode": -11,
+      "signal": "SIGSEGV",
+      "stderr_tail": [],
+      "stdout_tail": []
+    },
+    {
+      "calculator": "xtb-python",
+      "method": "GFN1-xTB",
+      "pbc": [
+        false,
+        false,
+        false
+      ],
+      "status": "ok",
+      "energy_eV": -11618.104779135838,
+      "fmax_all_atoms_eV_per_A": 6.185854003305661,
+      "fmax_argmax_index": 49,
+      "frms_all_atoms_eV_per_A": 2.511901343488629,
+      "force_sum_eV_per_A": [
+        -3.552713678800501e-15,
+        2.4868995751603507e-14,
+        -1.9984014443252818e-15
+      ],
+      "wall_time_s": 2.49
+    },
+    {
+      "calculator": "xtb-python",
+      "method": "GFN1-xTB",
+      "pbc": [
+        true,
+        true,
+        false
+      ],
+      "status": "ok",
+      "energy_eV": -11693.525682658754,
+      "fmax_all_atoms_eV_per_A": 1.2062883033329537,
+      "fmax_argmax_index": 44,
+      "frms_all_atoms_eV_per_A": 0.651233933615049,
+      "force_sum_eV_per_A": [
+        8.548717289613705e-15,
+        2.2508043453546176e-15,
+        -9.520162436160717e-15
+      ],
+      "wall_time_s": 3.051
+    },
+    {
+      "calculator": "xtb-python",
+      "method": "GFN1-xTB",
+      "pbc": [
+        true,
+        true,
+        true
+      ],
+      "status": "ok",
+      "energy_eV": -11693.525682658754,
+      "fmax_all_atoms_eV_per_A": 1.2062883033329537,
+      "fmax_argmax_index": 44,
+      "frms_all_atoms_eV_per_A": 0.651233933615049,
+      "force_sum_eV_per_A": [
+        2.6645352591003757e-15,
+        8.048954933481223e-15,
+        -1.2628786905111156e-14
+      ],
+      "wall_time_s": 2.905
+    },
+    {
+      "calculator": "tblite",
+      "method": "GFN1-xTB",
+      "pbc": [
+        false,
+        false,
+        false
+      ],
+      "status": "ok",
+      "energy_eV": -11618.10478743239,
+      "fmax_all_atoms_eV_per_A": 8.836623194401609,
+      "fmax_argmax_index": 49,
+      "frms_all_atoms_eV_per_A": 2.7608689205186927,
+      "force_sum_eV_per_A": [
+        -3.9968028886505635e-15,
+        -6.827871601444713e-15,
+        1.1657341758564144e-15
+      ],
+      "wall_time_s": 2.543
+    },
+    {
+      "calculator": "tblite",
+      "method": "GFN1-xTB",
+      "pbc": [
+        true,
+        true,
+        false
+      ],
+      "status": "ok",
+      "energy_eV": -11683.43368072687,
+      "fmax_all_atoms_eV_per_A": 1.3282428582188706,
+      "fmax_argmax_index": 73,
+      "frms_all_atoms_eV_per_A": 0.6909131307205267,
+      "force_sum_eV_per_A": [
+        -1.0658141036401503e-14,
+        2.5902011431918858e-15,
+        -1.4488410471358293e-14
+      ],
+      "wall_time_s": 2.806
+    },
+    {
+      "calculator": "tblite",
+      "method": "GFN1-xTB",
+      "pbc": [
+        true,
+        true,
+        true
+      ],
+      "status": "ok",
+      "energy_eV": -11683.43368072687,
+      "fmax_all_atoms_eV_per_A": 1.3282428582188706,
+      "fmax_argmax_index": 73,
+      "frms_all_atoms_eV_per_A": 0.6909131307205267,
+      "force_sum_eV_per_A": [
+        -1.0658141036401503e-14,
+        2.5902011431918858e-15,
+        -1.4488410471358293e-14
+      ],
+      "wall_time_s": 2.654
+    }
+  ]
+}
