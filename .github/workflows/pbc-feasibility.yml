@@ -12,21 +12,12 @@ name: Periodic boundary feasibility (GFN2-xTB)
 # xtb-version-against-frozen-config check guards the environment the science
 # actually runs in. A separate env would have validated the wrong thing.
 
+# Manual only. The feasibility question is a one-off diagnostic, and the
+# committed docs/*.json files are its record, so it should not re-run on every
+# change to environment.yml or the frozen config. GitHub only shows the
+# "Run workflow" button for workflows on the default branch, so until this file
+# is on main it cannot be started from this branch at all.
 on:
-  push:
-    paths:
-      - "scripts/pbc_feasibility_probe.py"
-      - "scripts/pbc_2d_vs_3d_check.py"
-      - "scripts/ci_report.py"
-      - "inputs/slab_clean_2x2_canonical.in"
-      - "inputs/frozen_optimiser_config.json"
-      - "environment.yml"
-      - ".github/workflows/pbc-feasibility.yml"
-  pull_request:
-    paths:
-      - "scripts/pbc_*.py"
-      - "environment.yml"
-      - ".github/workflows/pbc-feasibility.yml"
   workflow_dispatch:
 
 permissions:
@@ -46,24 +37,26 @@ jobs:
           auto-update-conda: true
           auto-activate: false
 
-      - name: Create conda environment
+      - name: Create conda environments
         shell: bash -l {0}
         run: |
           set -euo pipefail
           conda env create -f environment.yml || true
           conda run -n iro2 python -c "import numpy, ase, xtb; print('iro2 ok')"
-          
+          # The probe environment: the same file plus one override, pinning
+          # tblite-python 0.5.0 because tblite 0.6/0.7 with dftd4 4.2 segfault
+          # on any GFN2 calculation. Built, used and discarded inside CI.
+          conda env create -f environment.yml -n probe || true
+          conda install -n probe -c conda-forge -y tblite-python=0.5.0
+          conda run -n probe python -c "import numpy, ase, xtb, tblite; print('probe ok')"
 
-      - name: Record the resolved environment
+      - name: Record the resolved environments
         shell: bash -l {0}
         run: |
           set -euo pipefail
           conda list -n iro2 --json > conda-list.json
           conda list -n probe --json > conda-list-probe.json
           conda run -n iro2 python -c "import xtb; print('xtb-python', xtb.__version__)"
-          conda env create -f environment.yml -n probe || true
-          conda install -n probe -c conda-forge -y tblite-python=0.5.0
-          conda run -n probe python -c "import numpy, ase, xtb, tblite; print('probe ok')"
 
       - name: Syntax check every script
         shell: bash -l {0}
@@ -101,14 +94,14 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p outputs
-          conda run -n iro2 python -u scripts/pbc_feasibility_probe.py \
+          conda run -n probe python -u scripts/pbc_feasibility_probe.py \
             --out outputs/pbc_feasibility_probe_linux.json
 
       - name: Vacuum sensitivity, GFN1 control
         shell: bash -l {0}
         run: |
           set -euo pipefail
-          conda run -n iro2 python -u scripts/pbc_2d_vs_3d_check.py \
+          conda run -n probe python -u scripts/pbc_2d_vs_3d_check.py \
             --method GFN1-xTB \
             --out outputs/pbc_2d_vs_3d_gfn1_linux.json
 
@@ -119,7 +112,7 @@ jobs:
         shell: bash -l {0}
         run: |
           set -euo pipefail
-          conda run -n iro2 python -u scripts/pbc_2d_vs_3d_check.py \
+          conda run -n probe python -u scripts/pbc_2d_vs_3d_check.py \
             --method GFN2-xTB --calculators tblite \
             --out outputs/pbc_2d_vs_3d_gfn2_linux.json || true
 
