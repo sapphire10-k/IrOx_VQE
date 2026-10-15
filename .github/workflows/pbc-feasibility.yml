@@ -51,14 +51,19 @@ jobs:
         run: |
           set -euo pipefail
           conda env create -f environment.yml || true
-          conda run -n iro2 python -c "import numpy, ase, xtb, tblite; print('env ok')"
+          conda run -n iro2 python -c "import numpy, ase, xtb; print('iro2 ok')"
+          
 
       - name: Record the resolved environment
         shell: bash -l {0}
         run: |
           set -euo pipefail
           conda list -n iro2 --json > conda-list.json
+          conda list -n probe --json > conda-list-probe.json
           conda run -n iro2 python -c "import xtb; print('xtb-python', xtb.__version__)"
+          conda env create -f environment.yml -n probe || true
+          conda install -n probe -c conda-forge -y tblite-python=0.5.0
+          conda run -n probe python -c "import numpy, ase, xtb, tblite; print('probe ok')"
 
       - name: Syntax check every script
         shell: bash -l {0}
@@ -126,6 +131,7 @@ jobs:
           conda run -n iro2 python scripts/ci_report.py \
             --probe outputs/pbc_feasibility_probe_linux.json \
             --conda-list conda-list.json \
+            --probe-conda-list conda-list-probe.json \
             --config inputs/frozen_optimiser_config.json \
             --vacuum outputs/pbc_2d_vs_3d_gfn1_linux.json \
                      outputs/pbc_2d_vs_3d_gfn2_linux.json \
@@ -139,4 +145,5 @@ jobs:
           path: |
             outputs/*.json
             conda-list.json
+            conda-list-probe.json
           retention-days: 90
