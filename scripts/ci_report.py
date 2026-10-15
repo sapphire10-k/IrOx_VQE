@@ -32,8 +32,10 @@ PBC_LABEL = {"[true, true, true]": "TTT", "[true, true, false]": "TTF",
              "[false, false, false]": "FFF"}
 
 # Packages worth naming in the summary. Anything else in the solve is noise.
+# dftd4 and multicharge are listed because GFN2 uses D4 dispersion and GFN1
+# does not: a GFN2-only crash with GFN1 healthy points straight at them.
 OF_INTEREST = ("python", "numpy", "ase", "xtb", "xtb-python",
-               "tblite", "tblite-python")
+               "tblite", "tblite-python", "dftd4", "multicharge")
 
 
 def pbc_label(pbc) -> str:
@@ -87,26 +89,59 @@ def main() -> int:
         out.append("**Yes, through tblite.** The deciding trial "
                    "`tblite GFN2-xTB pbc=TTT` returned "
                    f"{deciding[0]['energy_eV']:.6f} eV.\n")
-        out.append("Commits 10 and 11 in `docs/branch_commit_runbook.md` can "
-                   "now be made. The Hamiltonian does not change, but three "
-                   "settings do: the calculator moves from "
-                   "`xtb.ase.calculator.XTB` to `tblite.ase.TBLite`, the "
-                   "electronic temperature becomes an explicit recorded "
-                   "argument instead of a library default, and "
-                   "`vacuum_along_c_A` is set from the convergence tables "
-                   "below rather than assumed. The pbc flag is not among "
-                   "them: it was already set in commit 8.\n")
+        out.append("The engine change in "
+                   "`docs/periodic_boundaries_change_set.md` can now be made. "
+                   "The Hamiltonian does not change, but three settings do: "
+                   "the calculator moves from `xtb.ase.calculator.XTB` to "
+                   "`tblite.ase.TBLite`, the electronic temperature becomes "
+                   "an explicit recorded argument instead of a library "
+                   "default, and `vacuum_along_c_A` is set from the "
+                   "convergence tables below rather than assumed. The pbc "
+                   "flag is not among them: it is already in the frozen "
+                   "config.\n")
     elif deciding:
         d = deciding[0]
         detail = ("\n".join(d.get("error_chain") or [])
                   or d.get("error")
                   or f"{d.get('signal')} (returncode {d.get('returncode')})")
-        out.append("**Not on this platform.** The deciding trial "
-                   f"`tblite GFN2-xTB pbc=TTT` came back `{d['status']}`:\n")
-        out.append(f"```\n{detail.strip()}\n```\n")
-        out.append("Do not make commits 10 or 11. Commits 1 to 9 are correct "
-                   "either way, so the branch still stands. See "
-                   "`docs/pbc_recommendation.md` for the periodic DFT route.\n")
+        # The control that makes the periodic row interpretable: the same
+        # engine and method with NO periodicity. If that also fails, the
+        # periodic failure says nothing about periodicity; the GFN2 path in
+        # this build is broken outright.
+        control = [t for t in trials
+                   if t["calculator"] == "tblite" and t["method"] == "GFN2-xTB"
+                   and pbc_label(t["pbc"]) == "FFF"]
+        control_failed = bool(control) and control[0]["status"] != "ok"
+        if control_failed:
+            out.append("**Not determined.** `tblite GFN2-xTB` failed with "
+                       "periodic boundaries, but it also failed **without** "
+                       f"them (`pbc=FFF` came back `{control[0]['status']}`). "
+                       "A method that cannot run on an open cluster tells you "
+                       "nothing about periodicity: the GFN2 path in this "
+                       "tblite build is broken outright, and the question "
+                       "this probe exists to answer has not been asked yet.\n")
+            gfn1 = [t for t in trials
+                    if t["calculator"] == "tblite" and t["method"] == "GFN1-xTB"
+                    and pbc_label(t["pbc"]) == "TTT"]
+            if gfn1 and gfn1[0]["status"] == "ok":
+                out.append("tblite's periodic machinery itself works: "
+                           "`tblite GFN1-xTB pbc=TTT` returned "
+                           f"{gfn1[0]['energy_eV']:.6f} eV. The fault is "
+                           "specific to the GFN2 path. GFN2 uses D4 "
+                           "dispersion and GFN1 uses D3, so check the "
+                           "resolved `dftd4` version in the environment "
+                           "table.\n")
+            out.append(f"```\n{detail.strip()}\n```\n")
+            out.append("Do not apply the engine change. Fix the build, then "
+                       "re-run this workflow.\n")
+        else:
+            out.append("**No.** `tblite GFN2-xTB` runs on an open cluster but "
+                       "fails with periodic boundaries, so the failure is "
+                       f"about periodicity. It came back `{d['status']}`:\n")
+            out.append(f"```\n{detail.strip()}\n```\n")
+            out.append("Do not apply the engine change. See "
+                       "`docs/pbc_recommendation.md` for the periodic DFT "
+                       "route.\n")
     else:
         out.append("The deciding trial was not present in the probe output.\n")
 
