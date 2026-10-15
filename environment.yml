@@ -7,7 +7,9 @@ dependencies:
   - numpy
   - ase
   - pytest
-  - xtb
+  - xtb=6.7.1
   - matplotlib
   - xtb-python
   - pyyaml
+  - tblite-python
+  - pyflakes
