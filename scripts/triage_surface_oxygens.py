@@ -52,10 +52,14 @@ def bond_audit(atoms):
     # In-plane periodicity must be respected when counting neighbours,
     # otherwise atoms at the cell edge lose bonds across the boundary and
     # coordination-based checks misfire. The optimisation stage stores
-    # slabs with pbc switched off (xTB convention), so restore x/y
+    # This is old and has been commented out so ignore. Slabs with pbc switched off (xTB convention), so restore x/y
     # periodicity from the cell for analysis only.
     atoms = atoms.copy()
-    atoms.set_pbc((True, True, False))
+    #atoms.set_pbc((True, True, False))
+   # States are written periodic in a and b. Assert rather than restore, so
+    # a structure built by an older path is rejected instead of patched.
+    assert atoms.get_pbc()[0] and atoms.get_pbc()[1], (
+        f"expected a,b periodic, got pbc={atoms.get_pbc()}")
     sym = np.array(atoms.get_chemical_symbols())
     ir = np.where(sym == "Ir")[0]
     ox = np.where(sym == "O")[0]
