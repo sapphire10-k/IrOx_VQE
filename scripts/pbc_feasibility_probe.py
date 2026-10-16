@@ -183,6 +183,10 @@ def main() -> None:
     ap.add_argument("--slab", default="inputs/slab_clean_2x2_canonical.in")
     ap.add_argument("--out", default="outputs/pbc_feasibility_probe.json")
     ap.add_argument("--method", default="GFN2-xTB")
+    ap.add_argument("--calculators", nargs="+", default=["xtb-python", "tblite"],
+                choices=["xtb-python", "tblite"],
+                help="Engines to trial. CI passes --calculators tblite, because "
+                    "tblite-python 0.5.0 cannot share an environment with xtb.")
     ap.add_argument("--single", action="store_true",
                     help="Internal: run one trial and print a @@RESULT@@ line.")
     ap.add_argument("--kind", default="xtb-python")
@@ -215,6 +219,8 @@ def main() -> None:
     # multipole electrostatics, not the periodic machinery or the install.
     for kind, meth in (("xtb-python", "GFN2-xTB"), ("tblite", "GFN2-xTB"),
                        ("xtb-python", "GFN1-xTB"), ("tblite", "GFN1-xTB")):
+        if kind not in args.calculators:
+            continue
         for pbc_key in ("FFF", "TTF", "TTT"):
             rec = run_trial_subprocess(args.slab, kind, pbc_key, meth)
             report["trials"].append(rec)
