@@ -49,12 +49,15 @@ jobs:
           set -euo pipefail
           conda env create -f environment.yml || true
           conda run -n iro2 python -c "import numpy, ase, xtb; print('iro2 ok')"
-          # The probe environment: the same file plus one override, pinning
-          # tblite-python 0.5.0 because tblite 0.6/0.7 with dftd4 4.2 segfault
-          # on any GFN2 calculation. Built, used and discarded inside CI.
-          conda env create -f environment.yml -n probe || true
-          conda install -n probe -c conda-forge -y tblite-python=0.5.0
-          conda run -n probe python -c "import numpy, ase, xtb, tblite; print('probe ok')"
+          # The probe environment. tblite 0.6/0.7 with dftd4 4.2 segfault on any
+          # GFN2 calculation, so the probe needs tblite-python 0.5.0. That cannot
+          # be built from environment.yml: xtb 6.7.1 requires tblite 0.6.x and
+          # xtb-python requires xtb >= 6.7.1, while tblite-python 0.5.0 requires
+          # tblite 0.5.x. So the probe env holds no xtb at all and runs only the
+          # tblite rows. Python matches environment.yml; keep the two in step.
+          # Built, used and discarded inside CI; nothing about it is committed.
+          conda create -n probe -c conda-forge -y python=3.11 numpy ase tblite-python=0.5.0
+          conda run -n probe python -c "import numpy, ase, tblite; print('probe ok')"
 
       - name: Record the resolved environments
         shell: bash -l {0}
@@ -101,6 +104,7 @@ jobs:
           set -euo pipefail
           mkdir -p outputs
           conda run -n probe python -u scripts/pbc_feasibility_probe.py \
+            --calculators tblite \
             --out outputs/pbc_feasibility_probe_linux.json
 
       - name: Vacuum sensitivity, GFN1 control
@@ -108,7 +112,7 @@ jobs:
         run: |
           set -euo pipefail
           conda run -n probe python -u scripts/pbc_2d_vs_3d_check.py \
-            --method GFN1-xTB \
+            --method GFN1-xTB --calculators tblite \
             --out outputs/pbc_2d_vs_3d_gfn1_linux.json
 
       # This script does not isolate trials in subprocesses, so a tblite
